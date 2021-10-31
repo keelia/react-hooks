@@ -56,7 +56,7 @@ const useAsync = (asyncFunc)=>{
 ![image](./public/redux-thunk.png)
 
 
-#### reusale fetchData by Async Action
+#### reusabe fetchData by Async Action
 - How to fetch data in general way ? 
   - Normally need 3 actions : fetching/loading;fetched/success;fetched/failed;
     - dispatch({ type: 'FETCH_DATA_BEGIN' });
@@ -66,7 +66,24 @@ const useAsync = (asyncFunc)=>{
     - const data = useSelectore(state => state.data); 
     - const pending = useSelector(state => state.pending); 
     - const error = useSelector(state => state.error);
-
+```
+export const useAsync = (asyncFunc)=>{
+    const [data, setData] = useState(null); 
+    const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState(null);
+    const execute = useCallback(()=>{
+        setLoading(true)
+        asyncFunc().then(response=>{
+            setData(response)
+            setLoading(false)
+        }).catch(err=>{
+            setLoading(false)
+            setError(err)
+        })
+    },[asyncFunc])
+    return {data,loading,error,execute}
+}
+```
 - Make fetchData(thunk) reusable by Async Action in Redux
   - Set up redux-thunk
   - Create thunk
