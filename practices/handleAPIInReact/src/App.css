@@ -1,0 +1,48 @@
+.text-center{
+  text-align: center;
+}
+section{
+  border: 1px dashed darkblue;
+}
+section h2{
+  text-align: center;
+  color:darkblue;
+}
+section .sectionItem{
+  flex-basis: 50%;
+  text-align: center;
+}
+
+.articles{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+.articles ul.sidenav{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.articles ul.sidenav li{
+  text-transform: capitalize;
+  font-size: 20px;
+  padding: 10px;
+}
+.articles ul.sidenav li.selected{
+  color:red;
+}
+
+.articles ul.sidenav li:first-child{
+  padding-top: 0px;
+}
+
+.articles ul.sidenav li:hover{
+  color: darkblue;
+  cursor: pointer;
+}
+.articles .main{
+  flex: 1;
+  padding-left: 20px;
+}

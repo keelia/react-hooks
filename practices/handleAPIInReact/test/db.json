@@ -1,0 +1,76 @@
+{
+    "articles":[
+        {
+            "id":0,
+            "name":"article 1",
+            "content":"article content 1",
+            "authorId":1
+        },
+        {
+            "id":1,
+            "name":"article 2",
+            "content":"article content 2",
+            "authorId":2
+        },
+        {
+            "id":2,
+            "name":"article 3",
+            "content":"article content 3",
+            "authorId":0
+        }
+    ],
+    "authors":[
+        {
+            "id":0,
+            "name":"Henry"
+        },
+        {
+            "id":1,
+            "name":"Ben"
+        },
+        {
+            "id":2,
+            "name":"Ann"
+        }
+    ],
+    "comments":[
+        {
+            "id":0,
+            "name":"A",
+            "articleId":0,
+            "comment":"A good article."
+        },
+        {
+            "id":1,
+            "name":"B",
+            "articleId":1,
+            "comment":"A good article."
+        },
+        {
+            "id":2,
+            "name":"B",
+            "articleId":2,
+
+            "comment":"A good article."
+        },
+        {
+            "id":3,
+            "name":"C",
+            "articleId":1,
+
+            "comment":"A good article."
+        },
+        {
+            "id":4,
+            "name":"C",
+            "articleId":2,
+
+            "comment":"A good article."
+        },{
+            "id":5,
+            "name":"C",
+            "articleId":0,
+            "comment":"A good article."
+        }
+    ]
+}
