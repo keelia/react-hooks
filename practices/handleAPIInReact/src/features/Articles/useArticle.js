@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import APIClient from './APIClient'
 
-const useArticle = (id)=>{
+const useArticle = (id,auto_execute = true)=>{
   const [data,setData] = useState(null);
   const [error,setError] = useState(null);
   const [loading,setLoading] = useState(false);
-  useEffect(()=>{
-    //reset states when re-fetch data
-    console.log('fetch article',id)
+  const execute = useCallback(()=>{
     setLoading(true)
     setData(null)
     setError(null)
@@ -19,10 +17,16 @@ const useArticle = (id)=>{
       setLoading(false)
     })
   },[id])
+  useEffect(()=>{
+    if(auto_execute){
+      execute()
+    }
+  },[auto_execute,execute])
   return {
     data,
     error,
-    loading
+    loading,
+    execute
   }
 }
 export default useArticle

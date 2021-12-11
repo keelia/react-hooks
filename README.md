@@ -217,8 +217,9 @@ Obviously, useEffect above all triggered by data(articleId->articleDetails/artic
 > 然后，我们需要充分利用 Hooks 能让数据源变得可绑定的能力，让一个远程 API 对应的数据成为一个语义化的数据源，既可以把业务逻辑和 UI 展现很好地分开，也有利于测试和维护。
 > 最后呢，针对多请求的处理，利用状态的组合变化来实现并发和串行请求。
 
-
-
+### What if sometimes need component get data automatically, sometimes need get data by clicking button ? How to re-design useArticle hook?
+1. Add a toggle parameter to hook for trigger fetch automatically or not.
+2. Return a execute function from the hook to let component to trigger fetch as needed at any time.
 
 
 

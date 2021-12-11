@@ -6,7 +6,7 @@ const useAuthor = (authorId)=>{
   const [error,setError] = useState(null);
   const [loading,setLoading] = useState(false);
   useEffect(()=>{
-    if(!authorId){
+    if(!authorId && authorId!==0){
       return
     }
     //reset states when re-fetch data

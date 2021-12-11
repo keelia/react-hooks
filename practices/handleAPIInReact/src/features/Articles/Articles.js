@@ -20,7 +20,7 @@ export default function Articles() {
           {data?.map(article=><li key={article.id} className={selectedArticle?.id ===article.id ? 'selected':"" } onClick={_=>(setSelectedArticle(article))}>{article.name}</li>)}
         </ul>
         <div className="main">
-          {selectedArticle ? <ArticleView id={selectedArticle?.id}/> : 'Please select an article.'}
+          {selectedArticle ? <ArticleView id={selectedArticle?.id} auto_load={selectedArticle?.id%2 === 0}/> : 'Please select an article.'}
         </div>
       </div>
     );
