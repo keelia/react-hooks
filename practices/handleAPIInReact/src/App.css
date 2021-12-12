@@ -46,3 +46,21 @@ section .sectionItem{
   flex: 1;
   padding-left: 20px;
 }
+
+.list-with-more #popover{
+  position: relative;
+  cursor: pointer;
+}
+.list-with-more #popover #popoverContent{
+  position: absolute;
+  display: none;
+}
+.list-with-more #popover #popoverContent.show{
+  display: block;
+  top: -20px;
+  background-color: lightblue;
+}
+
+.user-names,.user-names .list-with-more , .user-names .list-with-more #popover{
+  display: inline-block;
+}

@@ -221,6 +221,109 @@ Obviously, useEffect above all triggered by data(articleId->articleDetails/artic
 1. Add a toggle parameter to hook for trigger fetch automatically or not.
 2. Return a execute function from the hook to let component to trigger fetch as needed at any time.
 
+## Design pattern in function component
+### Container pattern - use hooks conditionally
+To Solve : In some cases, don't want to fetch data if invisible, but Hooks can't be used in conditional statement
+```
+function UserInfoModal({ visible, userId, ...rest }) {
+  if (!visible) return null;
+  const { data, loading, error } = useUser(userId); //Syntax Error
+  return (
+    <Modal visible={visible} {...rest}>
+      {/* Modal Content */}
+    </Modal>
+  );
+};
+```
+Use a component wrapper to do condition check, make sure UI-render-component always accept non-null values
+```
+function UserInfoModalWrapper({ visible, ...rest }) {
+  if (!visible) return null;
+  return <UserInfoModal visible {...rest}/>;
+};
+//Practically, not just one condition : visible, more frequently, will be a combinantion of props for checking.
+```
+
+- pros : keep each component simple and short, at least don't have to write some conditional statement, readale and easy to maintain
+- cons :  Not straightforward
+- usage : Conditional check mainly for seperate child-components, so Container pattern is used to seperate large logic chunks. To check specific details, we can put conditional check into Hooks, e.g. useAuthor
+```
+const useAuthor = (authorId)=>{
+  const [data,setData] = useState(null);
+  const [error,setError] = useState(null);
+  const [loading,setLoading] = useState(false);
+  useEffect(()=>{
+    if(!authorId){
+      return //do nothing
+    }
+    ....
+  },[authorId])
+  return {
+    data,
+    error,
+    loading
+  }
+}
+```
+
+### Render Props - reuse UI logic
+#### Render Props & HOC
+Render props and HOC are 2 main methord in Class component, in reality, every scenario uses HOC can use Render Props instead.
+- Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component
+- HOC: [a function that takes a component and returns a new component](https://reactjs.org/docs/higher-order-components.html)
+
+#### Render Props & Hook
+Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
+```
+//Hook Example for reusing counter data logic
+function useCounter() {
+  // 定义 count 这个 state 用于保存当前数值
+  const [count, setCount] = useState(0);
+  // 实现加 1 的操作
+  const increment = useCallback(() => setCount(count + 1), [count]);
+  // 实现减 1 的操作
+  const decrement = useCallback(() => setCount(count - 1), [count]);
+  
+  // 将业务逻辑的操作 export 出去供调用者使用
+  return { count, increment, decrement };
+}
+```
+```
+//Render Props Example for reusing counter UI logic 
+
+function CounterRenderer({ children }) {
+  const [count, setCount] = useState(0);
+  const increment = useCallback(() => {
+    setCount(count + 1);
+  }, [count]);
+  const decrement = useCallback(() => {
+    setCount(count - 1);
+  }, [count]);
+
+  return children({ count, increment, decrement });
+}
+function Counter() {
+  return (
+    <CounterRenderer>
+      {({ count, increment, decrement }) => {
+        return (
+          <div>
+            <button onClick={decrement}>-</button>
+            <span>{count}</span>
+            <button onClick={increment}>+</button>
+          </div>
+        );
+      }}
+    </CounterRenderer>
+  );
+}
+```
+
+
+
+
+
+
 
 
 

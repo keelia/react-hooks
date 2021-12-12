@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import APIClient from '../APIClient'
 
-const useComments = (articleId)=>{
+export const useUsers= ()=>{
   const [data,setData] = useState(null);
   const [error,setError] = useState(null);
   const [loading,setLoading] = useState(false);
@@ -10,18 +10,17 @@ const useComments = (articleId)=>{
     setLoading(true)
     setData(null)
     setError(null)
-    APIClient.get(`comments/?articleId=${articleId}`).then(res=>{
+    APIClient.get(`users`).then(res=>{
       setData(res.data)
       setLoading(false)
     }).catch(err=>{
       setError(err)
       setLoading(false)
     })
-  },[articleId])
+  },[])
   return {
     data,
     error,
     loading
   }
 }
-export default useComments

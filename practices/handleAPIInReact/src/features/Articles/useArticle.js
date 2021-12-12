@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import APIClient from './APIClient'
+import APIClient from '../APIClient'
 
 const useArticle = (id,auto_execute = true)=>{
   const [data,setData] = useState(null);

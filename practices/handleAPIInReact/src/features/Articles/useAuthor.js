@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import APIClient from './APIClient'
+import APIClient from '../APIClient'
 
 const useAuthor = (authorId)=>{
   const [data,setData] = useState(null);
