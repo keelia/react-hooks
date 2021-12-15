@@ -319,6 +319,59 @@ function Counter() {
 }
 ```
 
+### Event In React
+#### 2 kinds of Event In React
+1. DOM Event (Camel Case in React)
+   1. Methodology : [Synthetic Events](https://reactjs.org/docs/events.html), acturally it's leverage Browser's DOM Event propogate mechanism. 
+      1. With virtual DOM, every Event is binded to ROOT Node(document React 17 before, App Root Node after React 17), With DOM Event propogate mechanism, React is be able to know which Node triggers Event by checking srcElement, and collect/manage every event, then expose them by common API
+      2. Pros : In case when rendering virtual DOM, DOM has't been rendered to the page, can't bind events at this point
+      3. Props : shield the details of the underlying event, avoid browser compatibility, even for React Native which not render on browser, still is able to provide common API.
+   2. If callback function is binded to a DOM element, no different on performance for useCallback to wrap it.
+   3. If callack funtion is used on Custom Component, need useCallback to reduce unnecessary rendering.
+2. Custom Event
+   1. Methodology : Components own behavior, no thing relates to Browser, actually it's a callback mechanism.
+#### Use hook to simple process of React Event
+```
+//use hook to handle KeyPress Event
+export const useKeyPress= (domNode = document.body)=>{
+  const [key,setKey] = useState(null);
+  useEffect(()=>{
+        const handleKeyPress = evt=>setKey(evt.key)
+        domNode.addEventListener('keypress',handleKeyPress)
+        return ()=>{
+            domNode.removeEventListener('keypress',handleKeyPress)
+        }
+  },[domNode])
+  return key
+}
+
+export const useKeysPress= (domNode = document.body,keyCount = 2)=>{
+  const [keys,setKeys] = useState([]);
+  useEffect(()=>{
+    const handleKeyDown = evt=>{
+      setKeys(prev=>{
+        return prev.some(key=>key === evt.key) ? prev : [...prev.slice(1-keyCount),evt.key]
+      })
+    }
+    const handleKeyUp = evt=>{
+      setKeys(prev=>{
+        return prev.filter(key=>key!==evt.key)
+      })
+    }
+    domNode.addEventListener('keydown',handleKeyDown)
+    domNode.addEventListener('keyup',handleKeyUp)
+    return ()=>{
+        domNode.removeEventListener('keydown',handleKeyDown)
+        domNode.removeEventListener('keyup',handleKeyUp)
+    }
+  },[domNode,keyCount])
+  return useMemo(()=>{
+    return keys.length === keyCount ? keys:[]
+  },[keys,keyCount])
+  
+```
+
+
 
 
 
