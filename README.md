@@ -6,7 +6,7 @@
 - Extract business logic
 - Encapsulate generic logic : useAsync
 #### useAsync to encapsulate different request states and expose them to be used by component
-```
+```js
 const useAsync = (asyncFunc)=>{
     const [data, setData] = useState(null); 
     const [loading, setLoading] = useState(false); 
@@ -67,7 +67,7 @@ const useAsync = (asyncFunc)=>{
     - const data = useSelectore(state => state.data); 
     - const pending = useSelector(state => state.pending); 
     - const error = useSelector(state => state.error);
-```
+```js
 export const useAsync = (asyncFunc)=>{
     const [data, setData] = useState(null); 
     const [loading, setLoading] = useState(false); 
@@ -88,7 +88,7 @@ export const useAsync = (asyncFunc)=>{
 - Make fetchData(thunk) reusable by Async Action in Redux
   - Set up redux-thunk
   - Create thunk
-```
+```js
 //set up redux-thunk to store
 import { createStore, applyMiddleware } from 'redux'
 import thunkMiddleware from 'redux-thunk'
@@ -113,7 +113,7 @@ const fetchData = ()=>(dispatch)=>{
 - Async action in react-redux app
   - [Config store which includes middleware](https://redux.js.org/usage/configuring-your-store#the-solution-configurestore)
   - Create thunk
-```
+```js
 // config store
 import configureStore from './configureStore'
 const store = configureStore()
@@ -155,7 +155,7 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 ## Practice : Create custom controlled component in React
 <p>React controlled Component</p> : its value determited by passing value, instead of user inputs
 
-```
+```js
 <input value={value} onChange={handleChange} />
 ```
 
@@ -163,7 +163,7 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 React uncontrolled Component</p>
 : it can have its own internal state, its displaying value isn't controled by React.
 
-```
+```js
 <input onChange={handleChange} />
 ```
 ## Practice : handle API request in React
@@ -224,7 +224,7 @@ Obviously, useEffect above all triggered by data(articleId->articleDetails/artic
 ## Design pattern in function component
 ### Container pattern - use hooks conditionally
 To Solve : In some cases, don't want to fetch data if invisible, but Hooks can't be used in conditional statement
-```
+```js
 function UserInfoModal({ visible, userId, ...rest }) {
   if (!visible) return null;
   const { data, loading, error } = useUser(userId); //Syntax Error
@@ -236,7 +236,7 @@ function UserInfoModal({ visible, userId, ...rest }) {
 };
 ```
 Use a component wrapper to do condition check, make sure UI-render-component always accept non-null values
-```
+```js
 function UserInfoModalWrapper({ visible, ...rest }) {
   if (!visible) return null;
   return <UserInfoModal visible {...rest}/>;
@@ -247,7 +247,7 @@ function UserInfoModalWrapper({ visible, ...rest }) {
 - pros : keep each component simple and short, at least don't have to write some conditional statement, readale and easy to maintain
 - cons :  Not straightforward
 - usage : Conditional check mainly for seperate child-components, so Container pattern is used to seperate large logic chunks. To check specific details, we can put conditional check into Hooks, e.g. useAuthor
-```
+```js
 const useAuthor = (authorId)=>{
   const [data,setData] = useState(null);
   const [error,setError] = useState(null);
@@ -274,7 +274,7 @@ Render props and HOC are 2 main methord in Class component, in reality, every sc
 
 #### Render Props & Hook
 Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
-```
+```js
 //Hook Example for reusing counter data logic
 function useCounter() {
   // 定义 count 这个 state 用于保存当前数值
@@ -288,7 +288,7 @@ function useCounter() {
   return { count, increment, decrement };
 }
 ```
-```
+```js
 //Render Props Example for reusing counter UI logic 
 
 function CounterRenderer({ children }) {
@@ -331,7 +331,7 @@ function Counter() {
 2. Custom Event
    1. Methodology : Components own behavior, no thing relates to Browser, actually it's a callback mechanism.
 #### Use hook to simple process of React Event
-```
+```js
 //use hook to handle KeyPress Event
 export const useKeyPress= (domNode = document.body)=>{
   const [key,setKey] = useState(null);
@@ -368,8 +368,50 @@ export const useKeysPress= (domNode = document.body,keyCount = 2)=>{
   return useMemo(()=>{
     return keys.length === keyCount ? keys:[]
   },[keys,keyCount])
-  
+
 ```
+
+### Project Structure
+> Where does project complexity come from ? 
+**Dependencies**
+
+1. Create folders based on **Business funcationality(feature)**
+  * Each folder has its components, actions, hooks, styles 
+  * Keep folder flatten, avoid create deeper sub folders
+![image](./public/project-structure.png)
+2. Figure out Business dependences bewteen features, before implementation
+  * Hard dependence - comments hard depends on article, it can't work without article 
+  * Soft denpendence - article soft denpends on comments, it still works without comments
+3. Technically, aiming to delete a feature just like deleting a folder. **Do not let article hard depends on comments**. Bad example below, it's hard to add more functionalities(like,gallary) to ArticelView.
+  ```js
+  import CommentList from './CommentList';
+  function ArticleView() {
+    return (
+      <div className="article-view">
+        <MainContent />
+        <CommentList />
+      </div>
+    );
+  }
+  ```
+  * [Extension point](https://github.com/rekit/js-plugin): similar with events suscribe/dispatch mechanism.
+  ```js
+  function ArticleView({ id }) {
+    const { article } = useArticle(id);
+    return (
+      <div className="article-view">
+        <MainContent article={article} />
+        <Extension name="article.footer" args={article} />
+      </div>
+    );
+  }
+  extensionEngine.register('article.footer', article => {
+    return <CommentList article={article} />
+  });
+  ```
+  * Avoid to make a nav menu contains all features' nav logics
+  * Avoid to make a module contains all routes.
+  * Manage complexity should always keep in mind.
 
 
 
