@@ -138,7 +138,7 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 ```
 
 # React Hook Practices
-> #### Develop React is actually for developing and managing states in application.
+> Develop React is actually for developing and managing states in application:
 > - Keep states minimum
 >   - do not think of state as a variable so that abuse it
 >   - should keep it minimum but with completeness
@@ -152,21 +152,24 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 > - avoid intermediate state, make sure single data source. Find the correct source of state and ues it directly,without creating extra state. More states interact with each other, more logic to handle them.
 > Nature of React is state driven.[state change -> makes UI change](#react-redux)
 
-## Practice : Create custom controlled component in React
-<p>React controlled Component</p> : its value determited by passing value, instead of user inputs
+## React controlled components vs uncontrolled
+> React controlled Component 
+ * Its value determited by passing value, instead of user inputs
+ * To be able to fully control elements in React, some elements' react events are a little bit different from DOM element. e.g. input's React onChange will be triggered bby every typing, instead of losing focus like its DOM onchange event. Cons is may cause unnecessary render.
+ * Controlled component is frequently used in React than uncontrolled, unless in some scenarios need high performance.
 
 ```js
 <input value={value} onChange={handleChange} />
 ```
 
-<p>
-React uncontrolled Component</p>
-: it can have its own internal state, its displaying value isn't controled by React.
+> React uncontrolled Component
+ * Has its own internal state, its displaying value isn't controled by React.
+ * It isn't cause unnecessary render, since component isn't "changing" when typing from React perspective.
 
 ```js
 <input onChange={handleChange} />
 ```
-## Practice : handle API request in React
+## handle API request in React
 ### Create APIClient to handle API calls 
 Need implement a resusable API client, instead of calling APIs using fetch/Axios in every single component, which is handy for:
 - General Request Headers : Auth token
@@ -265,14 +268,13 @@ const useAuthor = (authorId)=>{
   }
 }
 ```
-
-### Render Props - reuse UI logic
-#### Render Props & HOC
+## Render Props - reuse UI logic
+### Render Props & HOC
 Render props and HOC are 2 main methord in Class component, in reality, every scenario uses HOC can use Render Props instead.
 - Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component
 - HOC: [a function that takes a component and returns a new component](https://reactjs.org/docs/higher-order-components.html)
 
-#### Render Props & Hook
+### Render Props & Hook
 Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
 ```js
 //Hook Example for reusing counter data logic
@@ -318,9 +320,8 @@ function Counter() {
   );
 }
 ```
-
-### Event In React
-#### 2 kinds of Event In React
+## Event In React
+### 2 kinds of Event In React
 1. DOM Event (Camel Case in React)
    1. Methodology : [Synthetic Events](https://reactjs.org/docs/events.html), acturally it's leverage Browser's DOM Event propogate mechanism. 
       1. With virtual DOM, every Event is binded to ROOT Node(document React 17 before, App Root Node after React 17), With DOM Event propogate mechanism, React is be able to know which Node triggers Event by checking srcElement, and collect/manage every event, then expose them by common API
@@ -330,51 +331,13 @@ function Counter() {
    3. If callack funtion is used on Custom Component, need useCallback to reduce unnecessary rendering.
 2. Custom Event
    1. Methodology : Components own behavior, no thing relates to Browser, actually it's a callback mechanism.
-#### Use hook to simple process of React Event
-```js
-//use hook to handle KeyPress Event
-export const useKeyPress= (domNode = document.body)=>{
-  const [key,setKey] = useState(null);
-  useEffect(()=>{
-        const handleKeyPress = evt=>setKey(evt.key)
-        domNode.addEventListener('keypress',handleKeyPress)
-        return ()=>{
-            domNode.removeEventListener('keypress',handleKeyPress)
-        }
-  },[domNode])
-  return key
-}
+### Use hook to simple process of React Event
+- [use hook to handle single KeyPress Event](./practices/EventAndForm/src/features/Events/useKeyPress.js)
+- [use hook to handle multiple KeyPress Events](./practices/EventAndForm/src/features/Events/useKeysPress.js)
 
-export const useKeysPress= (domNode = document.body,keyCount = 2)=>{
-  const [keys,setKeys] = useState([]);
-  useEffect(()=>{
-    const handleKeyDown = evt=>{
-      setKeys(prev=>{
-        return prev.some(key=>key === evt.key) ? prev : [...prev.slice(1-keyCount),evt.key]
-      })
-    }
-    const handleKeyUp = evt=>{
-      setKeys(prev=>{
-        return prev.filter(key=>key!==evt.key)
-      })
-    }
-    domNode.addEventListener('keydown',handleKeyDown)
-    domNode.addEventListener('keyup',handleKeyUp)
-    return ()=>{
-        domNode.removeEventListener('keydown',handleKeyDown)
-        domNode.removeEventListener('keyup',handleKeyUp)
-    }
-  },[domNode,keyCount])
-  return useMemo(()=>{
-    return keys.length === keyCount ? keys:[]
-  },[keys,keyCount])
-
-```
-
-### Project Structure
+## Project Structure
 > Where does project complexity come from ? 
 **Dependencies**
-
 1. Create folders based on **Business funcationality(feature)**
   * Each folder has its components, actions, hooks, styles 
   * Keep folder flatten, avoid create deeper sub folders
@@ -412,6 +375,17 @@ export const useKeysPress= (domNode = document.body,keyCount = 2)=>{
   * Avoid to make a nav menu contains all features' nav logics
   * Avoid to make a module contains all routes.
   * Manage complexity should always keep in mind.
+
+## React Form
+> Form is a combination of UI management and state management. Hooks help to keep the state management, allow components to only handle UI part. 
+- Most form field component is [controlled component](#React-controlled-components-vs-uncontrolled), so that we can use hook to keep their states.[useForm](./practices/EventAndForm/src/features/Form/useForm.js)
+- General Form Libs - all in same methodology : sperate form states logic from UI logic
+  * Ant Form
+    * provide form state management, UI supports as well, e.g. form layout, error display, mostly combined with Ant Design
+  * [Formik](https://formik.org/)
+    * Render props to reuse form state logic :  passing all form states into childComponent(...props) which is for UI logic.
+  * [React Hook Form](https://react-hook-form.com/)
+    * uncontrolled component to manage form elements, avoid duplicated render, good performance in complex form elements.
 
 
 
