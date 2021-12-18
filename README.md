@@ -1,9 +1,11 @@
 # React Hooks
-## Basics
+## Hook Basics
 - reusable logic
 - single responsibility
 ### Custom Hooks Scenario
 - Extract business logic
+- Listen on browser : useScroll / useCookies / useLocalStorage
+- divide complex component into hooks
 - Encapsulate generic logic : useAsync
 #### useAsync to encapsulate different request states and expose them to be used by component
 ```js
@@ -24,19 +26,14 @@ const useAsync = (asyncFunc)=>{
     return {data,loading,error,execute}
 }
 ```
-- Listen on browser : useScroll / useCookies / useLocalStorage
-- divide complex component into hooks
-
-### Redux
-#### Redux Store
+## Redux
+### Redux Store
 - Global unique
 - Tree structure
-
-#### Redux Usage
+### Redux Usage
 - Share states across components
 - Share states across multiple instances from one component
-
-#### Basic Concepts
+### Basic Concepts
 - state/store, pure JS object
 - action, pure js object
 - reducer, a function accepts state and action as params, get a new Store from calculation
@@ -46,7 +43,7 @@ const useAsync = (asyncFunc)=>{
   - Predictale
   - Easy to track and debug
 
-### React Redux
+## React Redux
 ![image](./public/react-redux.png)
 - In practice, we don't need care about how View is bind to data from Store, react-redux do this for us.
 
@@ -57,7 +54,7 @@ const useAsync = (asyncFunc)=>{
 ![image](./public/redux-thunk.png)
 
 
-#### reusabe fetchData by Async Action
+### reusabe fetchData by Async Action: [useAsync](#useasync-to-encapsulate-different-request-states-and-expose-them-to-be-used-by-component)
 - How to fetch data in general way ? 
   - Normally need 3 actions : fetching/loading;fetched/success;fetched/failed;
     - dispatch({ type: 'FETCH_DATA_BEGIN' });
@@ -67,75 +64,32 @@ const useAsync = (asyncFunc)=>{
     - const data = useSelectore(state => state.data); 
     - const pending = useSelector(state => state.pending); 
     - const error = useSelector(state => state.error);
-```js
-export const useAsync = (asyncFunc)=>{
-    const [data, setData] = useState(null); 
-    const [loading, setLoading] = useState(false); 
-    const [error, setError] = useState(null);
-    const execute = useCallback(()=>{
-        setLoading(true)
-        asyncFunc().then(response=>{
-            setData(response)
-            setLoading(false)
-        }).catch(err=>{
-            setLoading(false)
-            setError(err)
-        })
-    },[asyncFunc])
-    return {data,loading,error,execute}
-}
-```
-- Make fetchData(thunk) reusable by Async Action in Redux
-  - Set up redux-thunk
-  - Create thunk
-```js
-//set up redux-thunk to store
-import { createStore, applyMiddleware } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import rootReducer from './reducer'
+- [Make fetchData(thunk) reusable by Async Action in Redux](https://redux.js.org/tutorials/fundamentals/part-6-async-logic)
+  - Set up redux-thunk: [Thunks](https://redux.js.org/usage/writing-logic-thunks) are typically used to make async request.[Config store which includes middleware](https://redux.js.org/usage/configuring-your-store#the-solution-configurestore)
+    ```js
+    //set up redux-thunk to store
+    import { createStore, applyMiddleware } from 'redux'
+    import thunkMiddleware from 'redux-thunk'
+    import rootReducer from './reducer'
 
-const composedEnhancer = applyMiddleware(thunkMiddleware)
-const store = createStore(rootReducer, composedEnhancer)
-
-//create a thunck by hand, combining actions in async function
-
-const fetchData = ()=>(dispatch)=>{
-  dispatch({ type: 'FETCH_DATA_BEGIN' }); 
-  fetch('/some-url')
-    .then(res => { 
-        dispatch({ type: 'FETCH_DATA_SUCCESS', data: res }); 
-      })
-    .catch(err => { 
-        dispatch({ type: 'FETCH_DATA_FAILURE', error: err }); 
-      })
-  }
-```
-- Async action in react-redux app
-  - [Config store which includes middleware](https://redux.js.org/usage/configuring-your-store#the-solution-configurestore)
-  - Create thunk
-```js
-// config store
-import configureStore from './configureStore'
-const store = configureStore()
-
-//Create thunk method 1 : createAsyncThunk
-export const incrementAsync = createAsyncThunk(
-  'counter2/fetchCount', //action type string
-  async (amount) => {
-    const response = await fetchCount(amount);
-    // The value we return becomes the `fulfilled` action payload
-    return response.data;
-  }
-);
-
-//Create thunk method 2 : create thunk by hand
-export const incrementIfOdd = (amount) => (dispatch, getState) => {
-  const currentValue = selectCount(getState());
-  if (currentValue % 2 === 1) {
-    dispatch(incrementByAmount(amount));
-  }
-};
-```
+    const composedEnhancer = applyMiddleware(thunkMiddleware)
+    const store = createStore(rootReducer, composedEnhancer)
+    ```
+  - [Create thunk by using createAsyncThunk or by hand](./basics/my-react-redux-app/src/features/counter2/counter2Slice.js)
+  - Thunk can combinding actionsn in async function
+    ```js
+    //create a thunck by hand, combining actions in async function
+    const fetchData = ()=>(dispatch)=>{
+      dispatch({ type: 'FETCH_DATA_BEGIN' }); 
+      fetch('/some-url')
+        .then(res => { 
+            dispatch({ type: 'FETCH_DATA_SUCCESS', data: res }); 
+          })
+        .catch(err => { 
+            dispatch({ type: 'FETCH_DATA_FAILURE', error: err }); 
+          })
+      }
+    ```
 
 # React Hook Practices
 > Develop React is actually for developing and managing states in application:
@@ -154,9 +108,10 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 
 ## React controlled components vs uncontrolled
 > React controlled Component 
- * Its value determited by passing value, instead of user inputs
+ * Its value determited by passing value, instead of user inputs.
  * To be able to fully control elements in React, some elements' react events are a little bit different from DOM element. e.g. input's React onChange will be triggered bby every typing, instead of losing focus like its DOM onchange event. Cons is may cause unnecessary render.
  * Controlled component is frequently used in React than uncontrolled, unless in some scenarios need high performance.
+ * we can easily use hook to [value, setValue] controlled component.
 
 ```js
 <input value={value} onChange={handleChange} />
@@ -169,7 +124,7 @@ export const incrementIfOdd = (amount) => (dispatch, getState) => {
 ```js
 <input onChange={handleChange} />
 ```
-## handle API request in React
+## handle API request with Hook
 ### Create APIClient to handle API calls 
 Need implement a resusable API client, instead of calling APIs using fetch/Axios in every single component, which is handy for:
 - General Request Headers : Auth token
@@ -268,13 +223,13 @@ const useAuthor = (authorId)=>{
   }
 }
 ```
-## Render Props - reuse UI logic
-### Render Props & HOC
+### Render Props(reuse UI logic) with Hook
+#### Render Props & HOC
 Render props and HOC are 2 main methord in Class component, in reality, every scenario uses HOC can use Render Props instead.
 - Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component
 - HOC: [a function that takes a component and returns a new component](https://reactjs.org/docs/higher-order-components.html)
 
-### Render Props & Hook
+#### Render Props & Hook
 Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
 ```js
 //Hook Example for reusing counter data logic
@@ -320,7 +275,7 @@ function Counter() {
   );
 }
 ```
-## Event In React
+## React Event with Hook
 ### 2 kinds of Event In React
 1. DOM Event (Camel Case in React)
    1. Methodology : [Synthetic Events](https://reactjs.org/docs/events.html), acturally it's leverage Browser's DOM Event propogate mechanism. 
@@ -376,7 +331,7 @@ function Counter() {
   * Avoid to make a module contains all routes.
   * Manage complexity should always keep in mind.
 
-## React Form
+## React Form with Hook
 > Form is a combination of UI management and state management. Hooks help to keep the state management, allow components to only handle UI part. 
 - Most form field component is [controlled component](#React-controlled-components-vs-uncontrolled), so that we can use hook to keep their states.[useForm](./practices/EventAndForm/src/features/Form/useForm.js)
 - General Form Libs - all in same methodology : sperate form states logic from UI logic
