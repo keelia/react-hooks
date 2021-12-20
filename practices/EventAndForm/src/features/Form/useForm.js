@@ -26,7 +26,7 @@ export const useForm= (initialValue={},validators={},asyncValidators={})=>{
         : (prev[name]?.includes(errMsg) ? prev[name].filter(exist=>exist!==errMsg) : prev[name])
       }))
     }
-  },[])
+  },[asyncValidators,validators])
 
   const reset = useCallback(()=>setValues(initialValue),[initialValue])
   return {values,errors,setField,reset}
