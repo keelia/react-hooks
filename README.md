@@ -342,8 +342,12 @@ function Counter() {
   * [React Hook Form](https://react-hook-form.com/)
     * uncontrolled component to manage form elements, avoid duplicated render, good performance in complex form elements.
 
+## React Modal with Hook
+> Typically, Modal always inserted into Root Component for sharing by other child component.e.g. Root-Container includes UserList, Sidebar, and NewUserModal; UserList use NewUserModal for editing,Sidebar use it for adding. While adding other component to root which also needs NewUserModal, or subComponents of Sidebar/UserList also need use it, those make the Root container becomes more complex, unable to achieve semantic isolation.
 
+> Solution is using global modal mangagement methodology to generate modal and control its states, combine with Redux to keep states. While for some modals only need to be used once, we still can use the typically way to insert them to Root.
 
+- [Global Modal using Redux to store modal's states](./practices/Modal/src/features/NiceModal-Redux/NiceModal/NiceModal.js)
 
 
 
