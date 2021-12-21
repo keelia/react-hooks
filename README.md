@@ -348,7 +348,8 @@ function Counter() {
 > Solution is using global modal mangagement methodology to generate modal and control its states, combine with Redux to keep states. While for some modals only need to be used once, we still can use the typically way to insert them to Root.
 
 - [Global Modal using Redux to store modal's states](./practices/Modal/src/features/NiceModal-Redux/NiceModal/NiceModal.js)
-- [Global Modal using Context to provide/consume modals states](./practices/Modal/src/features/NiceModal-Context/NiceModal/NiceModal.js)
+- [Global Modal using Context to provide modals states and comsumed by nested component](./practices/Modal/src/features/NiceModal-Context/NiceModal/NiceModal.js)
+- [Global Modal using useContext and useReducer to manage state by dispatch/action, same logic as Redux. Normally, useReducer is combined with useContext to deal with complex data logic.(Could replace redux to a certain degree)](./practices/Modal/src/features/NiceModal-Context/NiceModal/NiceModal.js)
 
 
 
