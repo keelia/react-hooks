@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: row;
   height: calc(100vh - 20px);
+  flex-basis:50%;
+  margin: 5px;
+  border: 1px solid lightblue
 }
 .sidebar{
   flex-basis: 30%;

@@ -15,6 +15,7 @@ const Sidebar = () =>{
     return (
         <div className="sidebar">
             <button onClick={addNewUser}>Add New User</button>
+            <p>With Redux</p>
         </div>
         );
 }
