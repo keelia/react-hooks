@@ -398,5 +398,55 @@ function Counter() {
   * static bundle.js ![image](./public/staticResourceRequestFromServiceWorkder.png)
   * GET response ![image](./public/RequestFromServiceWorkder.png)
 
+# Packaging
+## Webpack
+- Loader(process resources) : convert different types of resources to modules.e.g. less-loader converts less to css;css-loader process css statements(import, url, etc.) to extract static resources(imgs,etc) and output css modules; style-load generate js includes css code automatically, insert css to style tag when app is runing(injectStylesIntoStyleTag).
+- Plugin(additional process on processed resources) : if you want to output an index.html after packaging('html-webpack-plugin'); or keep css seperate from js, removing style-loader and use mini-css-extract-plugin which recognize all css modules and generate them as one css file.
+
+```js
+  plugins: [
+    // 使用 HtmlWebpackPlugin 生成一个 index.html，其中自动引入 js    
+    // 并配置了页面的 title    
+    new HtmlWebpackPlugin({      title: 'Webpack Output',    }), 
+    // 引入提取 CSS 的插件以及参数 
+    new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash:8].css', })
+  ],
+```
+
+# Unit Test
+## Test Framework
+> Need 2 kinds of test framework, one for testing javascript logic(Mocha,Jasmine,[Jest](https://jestjs.io/)), another for React components(Enzyme，[React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)).
+> Jest and React Testing Library are installed automatically with create-react-app.
+
+### Jest for Unit Test
+- Jest will find file ends with .test.js(ts,jsx,tsx) in src folder
+- Create test files, Powerfull [expect](https://jestjs.io/docs/expect)
+- Run command npx jest --coverage
+
+### React Testing Library for React component Testing
+> For testing a React component we need: 
+> - An browser environment: jsdom provides virtual browser environment in node, with almost every browser API(document, window, etc.), so that components can run on memory.
+> - Can parse JSX syntax and latest JS syntax in project: set babel in Jest.
+> - Render a React component and verify the resule: React Testing Library.
+>   * render method to render a component in memory
+>   * screen for getting element from scree. getByText get DOM element by text.
+>   * expect, Testing Library extends Jest's expect methord for testing UI element, e.g. toBeInTheDocument. [See more API](https://testing-library.com/docs/react-testing-library/api/).
+> ```js
+> // 引入 testing-library 提供的相关工具
+> import { render, screen } from '@testing-library/react';
+> // 引入要测试的组件
+> import App from './App';
+> // 创建一个测试用例
+>test('renders learn react link', () => {
+>  // 使用 render 方法渲染 App 组件
+>  render(<App />);
+>  // 通过 screen 提供的 getByText 找到页面上的 DOM 元素
+>  const linkElement = screen.getByText(/learn react/i);
+>  // 断言这个元素应该在页面上
+>  expect(linkElement).toBeInTheDocument();
+>});
+> ```
+
+## How to unit test Custom Hooks
 
 
