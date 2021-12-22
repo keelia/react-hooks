@@ -366,7 +366,17 @@ function Counter() {
 - Permission check : [Router Auth](./practices/Router/src/features/RouterAuth/Overview.js)
   * Put permission check on Router level, instead of put into business logic, easier for maintain.
 
-
+# Speed up application - reduce loading time
+> 2 points : Load on demand; Efficient cache, only load once for same resource.
+## Import/Load on Demand in React
+- [Dynamic Import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports) which supported by [most browsers](https://caniuse.com/es6-module-dynamic-import) 
+  * Different from static import : <code>import xxx from '...'</code>, import() will return a promise.
+  * No being standard in ES, but bundlers e.g. Webpack implemented.
+  * Steps:
+    * Create a loader component and use it anywhere needs real component.
+    * Import real component inside loader component.
+    * loader component handles loading, error for UE.
+- [react-loadable](https://github.com/jamiebuilds/react-loadable) implements dynamic import steps by HOC
 
 
 
