@@ -351,6 +351,21 @@ function Counter() {
 - [Global Modal using Context to provide modals states and comsumed by nested component](./practices/Modal/src/features/NiceModal-Context/NiceModal/NiceModal.js)
 - [Global Modal using useContext and useReducer to manage state by dispatch/action, same logic as Redux. Normally, useReducer is combined with useContext to deal with complex data logic.(Could replace redux to a certain degree)](./practices/Modal/src/features/NiceModal-Context-Reducer/NiceModal/NiceModal.js)
 
+## React Router
+> Metheodology : Router decides which component to be rendered based on URL.
+> [Toy Router](./practices/Router/src/features/ToyRouter/ToyRouter.js). 
+> [React Router](https://reactrouter.com/docs/en/v6/examples/basic).
+
+
+> Remember Router is dynamical, it can be changed dynamically.
+<p>Usage of Router<p>
+
+- Navigaetion :  [Nested Router](./practices/Router/src/features/NestedRouter/Overview.js)
+- Keep page state:  [Keep page states in URL for sharable](./practices/Router/src/features/SharingPageStates/Overview.js)
+  * Keep states in URL (manipulate URL directly, instead of creating new state for keeping activeTab/currentPage).
+- Permission check : [Router Auth](./practices/Router/src/features/RouterAuth/Overview.js)
+  * Put permission check on Router level, instead of put into business logic, easier for maintain.
+
 
 
 
