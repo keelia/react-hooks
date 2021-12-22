@@ -377,8 +377,26 @@ function Counter() {
     * Import real component inside loader component.
     * loader component handles loading, error for UE.
 - [react-loadable](https://github.com/jamiebuilds/react-loadable) implements dynamic import steps by HOC
+- React Lazy, same methodology as react-loadable, react-loadable has richer API options.
 
+## Cache resources - Service Worker + [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
+> Service worker isn't only used with PWA for offline application, but also can be used with localStorage for cache.
 
+> [We can regard service worker as a request agent](./public/service-worker-as-request-agent.png)
+
+### With Service Worker + Cache Storage
+- Cache never expires, as long as loaded once, never needs load again, unless delete them manually.
+- Never visit resources which expires. If new version pulished, versioning resources to make sure user always access new version.
+
+### How to Use Service Worker + Cache Storage
+>[Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) 是一段独立于页面之外的 JavaScript 脚本，它并不在 Web 页面中运行，但是会在 Web 页面加载时，由一段代码去触发注册、下载和激活。一旦安装完成之后，Service Worker 就会拦截所有当前域名下的所有请求，由代码逻辑决定应该如何处理。
+> Cache Storage 也是浏览器提供的一种缓存机制，专门用于缓存一个请求的 request 和 response 的配对关系。此外，它还提供了 API，用来判断某个 request 是不是有对应的 response 已经缓存。所以 Cache Storage 也可以认为是专门为 Service Worker 提供的缓存机制。有了这样一段代码，我们就完成了 Service Worker 的安装。需要特别注意的是，每次打开 Web 页面时，页面其实都会调用 Service Worker 的 register 方法去注册。但是浏览器会判断脚本内容是否有变化，只有发生了变化才会重新安装。
+
+- Register in index.js and put sw.js to public folder
+- [Install](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers#install_and_activate_populating_your_cache) ServiceWorkder in sw.js
+- Handle request - [listening fetch event in SW](./practices/LoadPerformance/public/sw.js)
+  * static bundle.js ![image](./public/staticResourceRequestFromServiceWorkder.png)
+  * GET response ![image](./public/RequestFromServiceWorkder.png)
 
 
 

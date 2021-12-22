@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route,Link,Routes } from "react-router-dom";
 import { ProfilePage } from "./DynamicImport/ProfilePage";
 import './App.css';
+import APIClient from  './APIClient';
 import NormalPage from "./DynamicImport/NormalPage";
-const Home = props=><h1>Home</h1>
+
+const Home = props=>{
+  const [users,setUsers] = useState([])
+  useEffect(()=>{
+    APIClient.get('users').then(res=>setUsers(res.data))
+  },[]);
+  console.log(users)
+  return <h1>{JSON.stringify(users)}</h1>
+}
 function App() {
   return (
     <div className="App">

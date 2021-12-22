@@ -1,1 +1,0 @@
-export default  props=>(<p>I am the Real Profile Page</p>)

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -16,3 +17,4 @@ ReactDOM.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
+serviceWorker()
