@@ -427,7 +427,7 @@ function Counter() {
 > For testing a React component we need: 
 > - An browser environment: jsdom provides virtual browser environment in node, with almost every browser API(document, window, etc.), so that components can run on memory.
 > - Can parse JSX syntax and latest JS syntax in project: set babel in Jest.
-> - Render a React component and verify the resule: React Testing Library.
+> - [Render a React component and verify the resule: React Testing Library](./unit-test/src/Counter/Counter.test.js).
 >   * render method to render a component in memory
 >   * screen for getting element from scree. getByText get DOM element by text.
 >   * expect, Testing Library extends Jest's expect methord for testing UI element, e.g. toBeInTheDocument. [See more API](https://testing-library.com/docs/react-testing-library/api/).
@@ -448,5 +448,14 @@ function Counter() {
 > ```
 
 ## How to unit test Custom Hooks
+> Hooks must be used in function components or hooks. We cann't get rid of Component Context to test a hook.
+> We can: 
+> - Create a [wrapper function component](./unit-test/src/Counter/useCounter.WrapperComp.test.js) to use hook inside.
+>   * defects are we have to write many unnecessay code doesn't relate to the Hook, for example the DOM elements on UI.
+> - Better way to test Hook : still calling hook inside a wrapper component([just call the hook, not produce any UI](./unit-test/SRC/../src/Counter/useCounter.OutsideWrapperComp.test.js)), but expose hook's methods to outside of this wrapper component.
+>   * 这里需要注意的是，我们使用 了 [act](https://reactjs.org/docs/test-utils.html#act) 这样一个函数来封装对 Hook 返回值的方法调用。这个其实是 React 提供的一个测试用的函数，用于模拟一个真实的 React 组件的执行步骤，从而保证在 act 的回调函数执行完成后，还会等 React 组件的生命周期都执行完毕，比如 useEffect。这样才能在随后对组件的渲染结果进行验证.
+> Wrapper component is doing nothing, just calling the hook. [@testing-library/react-hooks](https://react-hooks-testing-library.com/reference/api/) extracts the functionality as a reusable tool.
+
+<p>Not every hook needs to be unit tested. We need breakdown complex component logic into individual costom hooks, in this case, unit-test for those hooks can be covered by component's unit test.</p>
 
 
