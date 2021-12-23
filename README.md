@@ -458,4 +458,26 @@ function Counter() {
 
 <p>Not every hook needs to be unit tested. We need breakdown complex component logic into individual costom hooks, in this case, unit-test for those hooks can be covered by component's unit test.</p>
 
+# third-party libs
+- Lodash
+- UI
+  * Material UI - To C, theming
+  * Ant Design - To B, suitable for complex Business scenarios
+- react-use
+  * useSearchParams : ```js const searchKey = useSearchParam("key")```
+  * useEvent : ```js useEvent('keydown', onKeyDown);```
+  * useCookie : ```js const [value, updateCookie, deleteCookie] = useCookie("my-cookie");```
+    * 需要注意的是，这里的 Hook 的作用域仅限于当前组件。如果 Cookie 是在组件外部被修改，则是无法触发当前组件的刷新的。你可以把这个 Hook 的作用看作是跟 useState 类似的，只是 State 的值是持久化在 Cookie 里存储的。
+  * usePrevious : 
+      ```js 
+      const [count, setCount] = React.useState(0); 
+      // 获取 cound 的上一个值 
+      const prevCount = usePrevious(count);
+      ```
+
+> How to chose third-party libs?
+> - documentation, test, bug fix.
+> - full understand on the lib, if it can be seperated by modules, and only use parts of it, instead of making application larger and larger.
+> - githu start and npm download.
+
 
