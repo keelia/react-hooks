@@ -4,7 +4,7 @@
 - single responsibility
 
 > “如果你的事件处理函数是传递给原生节点的，那么不写 callback，也几乎不会有任何性能的影响。”
-> React 组件是通过引用比较来判断某个值是否发生了变化，如果变化了，那么组件就需要重新渲染，以及虚拟 DOM 的 diff 比较。那么，如果每次传过去不同的函数，即使这些函数的功能完全一样，那也会导致组件被刷新。useCallback, useMemo 就是通过缓存上一次的的结果来确保如果功能没变，那么就使用同样的函数，来避免重新渲染。
+> React 组件是通过引用比较来判断某个值是否发生了变化，如果变化了，那么组件就需要重新渲染，以及虚拟 DOM 的 diff 比较。那么，如果每次传过去不同的函数，即使这些函数的功能完全一样，那也会导致组件被刷新。useCallback, useMemo 就是通过缓存上一次的的结果来确保如果功能没变，那么就使用同样的函数，来避免重新渲染。useCallback 可以用 useMemo 来实现，相当于返回值是一个回调函数，useCallback 其实并没有避免重复创建函数，因为在useCallback(() => {}, [deps])的形式中，每次运行都会创建一个函数。useCallback只是可以决定是不是要使用新的函数。在依赖项不变的时候，就始终返回之前的，从而避免组件的重复渲染。如果不给 useCallback 提供依赖项定义，那么和不使用 useCallback 是一样的，所以必须提供。
 > 所以，useCallback，useMemo 只是为了避免 React 组件的重复渲染而导致的性能损失。
 > 而对于原生的节点，比如 div, input 这些，它们已经是原子节点了，不再有子节点，所以不存在重复刷新带来的性能损失。
 > ```js 
@@ -239,11 +239,14 @@ const useAuthor = (authorId)=>{
 }
 ```
 ### Render Props(reuse UI logic) with Hook
-#### Render Props & HOC
+#### Render Props & HOC 都是为了逻辑重用
 Render props and HOC are 2 main methord in Class component, in reality, every scenario uses HOC can use Render Props instead.
-- Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component
+- Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component。
+  * render props 可以在容器组件中去渲染 UI。
 - HOC: [a function that takes a component and returns a new component](https://reactjs.org/docs/higher-order-components.html)
-- HOC is used as a Controller instead of providing additional attributes, its semantics are clearer. E.g. [UserInfoModalWrapper](#Container-pattern-use-hooks-conditionally), 对于一个 Modal 组件，当 visible 为 false 时，就直接返回 null 而不是去 render Modal 组件。这里就用 HOC 的模式新建了一个 Controller 性质的组件，来重用这种逻辑
+  * HOC is used as a Controller instead of providing additional attributes, its semantics are clearer. E.g. [UserInfoModalWrapper]，对于一个 Modal 组件，当 visible 为 false 时，就直接返回 null(在处理 falsy 的值时，React 遇到 null, 空字符串或者 false 不会渲染任何内容。undefined会报错，0会返回0)而不是去 render Modal 组件。这里就用 HOC 的模式新建了一个 Controller 性质的组件，来重用这种逻辑。 
+  * HOC也可以用于绑定外部数据源等数据逻辑，这方面功能可以被hooks取代。
+- 对于一些 Controller 类型的 HOC，或者需要复用UI渲染的render props ，都不太适合用 Hooks去实现。
 
 #### Render Props & Hook
 Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
