@@ -2,6 +2,21 @@
 ## Hook Basics
 - reusable logic
 - single responsibility
+
+> “如果你的事件处理函数是传递给原生节点的，那么不写 callback，也几乎不会有任何性能的影响。”
+> React 组件是通过引用比较来判断某个值是否发生了变化，如果变化了，那么组件就需要重新渲染，以及虚拟 DOM 的 diff 比较。那么，如果每次传过去不同的函数，即使这些函数的功能完全一样，那也会导致组件被刷新。useCallback, useMemo 就是通过缓存上一次的的结果来确保如果功能没变，那么就使用同样的函数，来避免重新渲染。
+> 所以，useCallback，useMemo 只是为了避免 React 组件的重复渲染而导致的性能损失。
+> 而对于原生的节点，比如 div, input 这些，它们已经是原子节点了，不再有子节点，所以不存在重复刷新带来的性能损失。
+> ```js 
+> <input onclick="dosomething"/>
+> ```
+>  这样的原生节点，onclick 每次给一个新值，也只是属性的更新而已。对于 div，因为它的 children 不是 react 去控制的，所以属性变化也就只是属性变化，不会影响 dom diff。
+> 比如 
+> ```js 
+> <Form onChange={onChange}>...</Form> 
+> ```
+> 这个 Form 组件会根据 onChange 是否变化来决定是否重新 render。useCallback 可以让 onChange 在多次渲染之间不变，避免 Form 组件的重新渲染
+
 ### Custom Hooks Scenario
 - Extract business logic
 - Listen on browser : useScroll / useCookies / useLocalStorage
@@ -228,6 +243,7 @@ const useAuthor = (authorId)=>{
 Render props and HOC are 2 main methord in Class component, in reality, every scenario uses HOC can use Render Props instead.
 - Render Proprs: pass render function(function component) as a prop to child component, let child component to call it for rendering.apply for both class and function component
 - HOC: [a function that takes a component and returns a new component](https://reactjs.org/docs/higher-order-components.html)
+- HOC is used as a Controller instead of providing additional attributes, its semantics are clearer. E.g. [UserInfoModalWrapper](#Container-pattern-use-hooks-conditionally), 对于一个 Modal 组件，当 visible 为 false 时，就直接返回 null 而不是去 render Modal 组件。这里就用 HOC 的模式新建了一个 Controller 性质的组件，来重用这种逻辑
 
 #### Render Props & Hook
 Hooks is the first choice of logic reusable. But hooks can only reuse data logic, we need Render Props to reuse UI logic.
@@ -349,7 +365,23 @@ function Counter() {
 
 - [Global Modal using Redux to store modal's states](./practices/Modal/src/features/NiceModal-Redux/NiceModal/NiceModal.js)
 - [Global Modal using Context to provide modals states and comsumed by nested component](./practices/Modal/src/features/NiceModal-Context/NiceModal/NiceModal.js)
-- [Global Modal using useContext and useReducer to manage state by dispatch/action, same logic as Redux. Normally, useReducer is combined with useContext to deal with complex data logic.(Could replace redux to a certain degree)](./practices/Modal/src/features/NiceModal-Context-Reducer/NiceModal/NiceModal.js)
+- [Global Modal using useContext and useReducer to manage state by dispatch/action, same logic as Redux. Normally, useReducer is combined with useContext to deal with complex data logic.(Could replace redux to a certain degree)](./practices/Modal/src/features/NiceModal-Context-Reducer/NiceModal/NiceModal.js).
+  ```js
+    import React, { useContext, useReducer } from 'react';
+    // 使用一个 Context 来存放 Modal 的状态
+    const NiceModalContext = React.createContext({});
+    // modalReducer 和 Redux 的场景完全一样
+    const modalReducer = ...
+    function NiceModalProvider({ children }) {
+      const [modals, dispatch] = useReducer(modalReducer,{});
+      return (
+        <NiceModalContext.Provider value={{ modals, dispatch }}>
+          {children}
+        </NiceModalContext.Provider>
+      );
+    };
+  ```
+  因为使用了 Context，所以需要在整个应用的根节点创建 Context 并提供所有对话框的状态管理机制。这里也看到了一个非常关键的组合，就是使用了 useReducer 来管理一个复杂的状态，然后再将这个状态作为 Context 的 value。需要注意的是，useReducer 管理的仍然是一个组件的本地状态，和 useState 类似，但其实单个组件很少有状态需要 useReducer 这样的高级功能来管理，所以一般其实 useReducer 都是和 Context 一起使用的，去管理一个更大范围的数据状态。
 
 ## React Router
 > Metheodology : Router decides which component to be rendered based on URL.
@@ -377,7 +409,7 @@ function Counter() {
     * Import real component inside loader component.
     * loader component handles loading, error for UE.
 - [react-loadable](https://github.com/jamiebuilds/react-loadable) implements dynamic import steps by HOC
-- React Lazy, same methodology as react-loadable, react-loadable has richer API options.
+- React Lazy, same methodology as react-loadable, react-loadable has richer API options.两者确实可以解决一样的问题，毕竟 import() 这个语句是由 Webpack 来处理，最终实现分包的。所以结合 React.lazy 和 Suspense 可以实现 react-loadable 的功能。但是呢，react-loadabale 提供了更丰富的 API，比如可以设置如果加载事件小于 300 毫秒，就不显示 loading 状态。这在使用 service worker 时可以让用户感知不到按需加载的存在，体验更好。因为有研究表明，如果加载时间本来很短，你却一闪而过一个 loading 状态，会让用户觉得时间很长。另外就是，react-loadable 提供了服务器端渲染的支持，而 React.lazy 是不行的。
 
 ## Cache resources - Service Worker + [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
 > Service worker isn't only used with PWA for offline application, but also can be used with localStorage for cache.
@@ -397,6 +429,10 @@ function Counter() {
 - Handle request - [listening fetch event in SW](./practices/LoadPerformance/public/sw.js)
   * static bundle.js ![image](./public/staticResourceRequestFromServiceWorkder.png)
   * GET response ![image](./public/RequestFromServiceWorkder.png)
+- Size of cache storage ?
+  <em>Cache 的大小并没有统一的规定，各个浏览器会提供不同的 size，但一个共识是根据当前磁盘剩余大小去调整，从而决定是否能继续存储数据。
+  但是，无论 Size 是多少，我们都需要及时清除不需要的数据，以及一定要处理存储失败的场景，转而使用服务器端的数据。从而保证即使 Cache 满了，也不影响功能的使用。</em>
+
 
 # Packaging
 ## Webpack
